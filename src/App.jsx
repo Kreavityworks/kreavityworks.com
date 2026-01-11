@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, Eye } from 'lucide-react';
 
-// --- IMPORT HALAMAN (NAMA BARU LEBIH BERSIH) ---
+// --- IMPORT HALAMAN ---
 import HomePage from './pages/HomePage.jsx';
 import WorkflowPage from './pages/WorkflowPage.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import CompanyPage from './pages/CompanyPage.jsx';
-import BecomePartnerAgent from './pages/PartnerPage.jsx'; // Updated Name
+import BecomePartnerAgent from './pages/PartnerPage.jsx'; 
 import ContactUs from './pages/ContactUs.jsx';
-import JoinTheNetwork from './pages/JoinPage.jsx';       // Updated Name
+import JoinTheNetwork from './pages/JoinPage.jsx';       
 import ProjectDetailPage from './pages/ProjectDetailPage.jsx';
 
 // --- IMPORT KOMPONEN UI ---
@@ -44,6 +44,30 @@ const App = () => {
       setIsContactOpen(true);
   };
 
+  // --- 1. HANDLE BROWSER HISTORY (BACK BUTTON FIX) ---
+  useEffect(() => {
+    // Set initial history state
+    if (!window.history.state) {
+        window.history.replaceState({ page: 'home' }, '', '/');
+    }
+
+    const handlePopState = (event) => {
+        if (event.state && event.state.page) {
+            setActivePage(event.state.page);
+            // Reset scroll on back button
+            if (scrollContainerRef.current) {
+                scrollContainerRef.current.scrollTo(0, 0);
+            }
+        } else {
+            setActivePage('home');
+        }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // --- CURSOR LOGIC ---
   useEffect(() => {
     let animationFrameId;
 
@@ -97,24 +121,17 @@ const App = () => {
     };
   }, [cursorHovering, isEyeMode, cursorText, isVideoHovering]);
 
+  // --- 2. UPDATED NAVIGATION LOGIC ---
   const navigateTo = (page, param = null) => {
       setIsMenuOpen(false);
+
       if (param === 'contact') {
           setInitialInterest(null);
           setIsContactOpen(true);
           return;
       }
-      if (activePage === page && typeof param === 'string' && !param.startsWith('0')) { 
-           const element = document.getElementById(param);
-           if (element) element.scrollIntoView({ behavior: 'smooth' });
-           return;
-      }
-      if (activePage === page && !param) {
-          if (scrollContainerRef.current) {
-              scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-          return;
-      }
+
+      // Handle Project Detail
       if (page === 'project') {
           const project = allProjects.find(p => p.id === param);
           if (project) {
@@ -122,18 +139,31 @@ const App = () => {
               setTimeout(() => {
                   setSelectedProject(project);
                   setActivePage('project');
+                  // Push History
+                  window.history.pushState({ page: 'project', id: param }, '', `/project/${param}`);
                   setLoaded(true); 
-                  setTimeout(() => {
-                      if (scrollContainerRef.current) scrollContainerRef.current.scrollTo(0,0);
-                  }, 50);
+                  if (scrollContainerRef.current) scrollContainerRef.current.scrollTo(0,0);
               }, 700);
           }
           return;
       }
+
+      // Handle Scroll to Section on same page
+      if (activePage === page && typeof param === 'string' && !param.startsWith('0')) { 
+           const element = document.getElementById(param);
+           if (element) element.scrollIntoView({ behavior: 'smooth' });
+           return;
+      }
+
+      // Handle Page Change
       if (activePage !== page) {
           setLoaded(false);
           setTimeout(() => {
               setActivePage(page);
+              // Push History
+              const path = page === 'home' ? '/' : `/${page}`;
+              window.history.pushState({ page: page }, '', path);
+              
               setLoaded(true);
               setTimeout(() => {
                   if (scrollContainerRef.current) scrollContainerRef.current.scrollTo(0,0);
@@ -143,6 +173,9 @@ const App = () => {
                   }
               }, 50);
           }, 700);
+      } else {
+          // Same page, just reset scroll
+          if (scrollContainerRef.current) scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
       }
   };
 
