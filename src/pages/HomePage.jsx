@@ -1,266 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import * as THREE from 'three';
-import { ArrowRight, Play, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react'; // Icon Play dihapus
 
-// --- DATA SOURCE ---
-const allProjects = [
-    { 
-        id: "01", 
-        folder: "01-ui-ux", 
-        title: "UI/UX Design", 
-        category: "Digital Capability", 
-        desc: "Crafting high-conversion interfaces that blend radical aesthetics with cognitive psychology to ensure seamless user journeys.", 
-        detailedDesc: "We deconstruct user behavior to reconstruct digital experiences. By merging data-driven insights with avant-garde aesthetics, we create interfaces that don't just look good—they perform. Every interaction is calculated, every pixel has a purpose.", 
-        alignRight: false,
-        video: "https://v.ftcdn.net/05/63/68/07/700_F_563680753_c1eGZf8z8A8y8E9z.mp4",
-        image: "/01-ui-ux/cover.png",
-        fileExt: ".png"
-    },
-    { 
-        id: "02", 
-        folder: "02-app-dev",
-        title: "App Development", 
-        category: "Digital Capability", 
-        desc: "Building robust, scalable, and secure mobile and web applications tailored to solve complex business challenges.", 
-        detailedDesc: "From native iOS/Android to cross-platform React Native solutions. We engineer applications that are built for scale, security, and speed. Our code is clean, modular, and ready for future integrations.", 
-        alignRight: true,
-        image: "/02-app-dev/cover.png",
-        fileExt: ".png"
-    },
-    { 
-        id: "03", 
-        folder: "03-brand-identity",
-        title: "Brand Identity", 
-        category: "Digital Capability", 
-        desc: "Elevating brand authority through premium visual assets that command attention and establish market leadership.", 
-        detailedDesc: "A brand is not just a logo; it's a belief system. We craft visual identities that resonate on a subconscious level, turning customers into loyal advocates through consistent, high-impact visual storytelling.", 
-        alignRight: false,
-        image: "/03-brand-identity/cover.png",
-        fileExt: ".png"
-    },
-    { 
-        id: "04", 
-        folder: "04-motion-graphic",
-        title: "Motion Graphic", 
-        category: "Digital Capability", 
-        desc: "Telling your brand story through high-fidelity motion graphics that capture the essence of your innovation.", 
-        detailedDesc: "Static is dead. We bring brands to life through fluid, kinetic typography and immersive motion design. We turn complex ideas into digestible, captivating visual narratives.", 
-        alignRight: true,
-        image: "/04-motion-graphic/cover.png",
-        fileExt: ".png"
-    },
-    { 
-        id: "05", 
-        folder: "05-ai-tools",
-        title: "AI Tools Development", 
-        category: "Digital Capability", 
-        desc: "Integrating autonomous intelligence to automate workflows, predict user behavior, and drive unprecedented business efficiency.", 
-        detailedDesc: "The future is autonomous. We build custom AI solutions that streamline operations, predict market trends, and personalize user experiences in real-time.", 
-        alignRight: false,
-        image: "/05-ai-tools/cover.jpg",
-        fileExt: ".jpg"
-    },
-    { 
-        id: "06", 
-        folder: "06-social-media",
-        title: "Social Media", 
-        category: "Digital Capability", 
-        desc: "Engineering strategic social presence through high-fidelity content systems that drive deep engagement and reinforce global brand dominance.", 
-        detailedDesc: "We don't just post; we dominate. Our social strategies are built on algorithmic understanding and high-fidelity content production that stops the scroll and drives engagement.", 
-        alignRight: true,
-        image: "/06-social-media/cover.png",
-        fileExt: ".png"
-    },
-    { 
-        id: "07", 
-        folder: "07-ecommerce",
-        title: "E-Commerce", 
-        category: "Digital Capability", 
-        desc: "Constructing frictionless digital commerce ecosystems designed for maximum conversion and seamless cross-platform scalability.", 
-        detailedDesc: "We build digital storefronts that sell. Focusing on speed, security, and conversion rate optimization (CRO), we create shopping experiences that are as seamless as they are beautiful.", 
-        alignRight: false,
-        image: "/07-ecommerce/cover.png",
-        fileExt: ".png"
-    },
-    { 
-        id: "08", 
-        folder: "08-banner",
-        title: "Platform Banner & Poster", 
-        category: "Digital Capability", 
-        desc: "Designing high-impact visual communications that command immediate attention across digital and physical platforms through elite art direction.", 
-        detailedDesc: "In a world of noise, clarity is king. We design promotional assets that cut through the clutter, delivering your message with precision and high-impact art direction.", 
-        alignRight: true,
-        image: "/08-banner/cover.png",
-        fileExt: ".png"
-    },
-    { 
-        id: "09", 
-        folder: "09-landing-page",
-        title: "Landing Page", 
-        category: "Digital Capability", 
-        desc: "Building hyper-optimized, high-velocity entry points that combine persuasive storytelling with data-driven UX to maximize user acquisition.", 
-        detailedDesc: "First impressions are everything. We design landing pages that are visually stunning and ruthlessly effective at converting visitors into leads. Speed, story, and structure in perfect harmony.", 
-        alignRight: false,
-        image: "/09-landing-page/cover.jpg",
-        fileExt: ".jpg"
-    },
-    { 
-        id: "10", 
-        folder: "10-print",
-        title: "Material Print Design", 
-        category: "Digital Capability", 
-        desc: "Extending brand authority into the physical realm through premium tactile assets that deliver a sophisticated and tangible brand experience.", 
-        detailedDesc: "Digital is fleeting; print is forever. We bring the same level of digital precision to physical assets, creating business cards, brochures, and packaging that feel premium to the touch.", 
-        alignRight: true,
-        image: "/10-print/cover.jpg",
-        fileExt: ".jpg"
-    }
-];
-
-// --- HELPER ---
-const handleImageError = (e) => {
-    const img = e.target;
-    const src = img.src;
-    if (img.getAttribute('data-tried-fallback') === 'true') {
-        if (src.endsWith('.jpg')) {
-             img.src = src.replace('.jpg', '.jpeg');
-             img.setAttribute('data-tried-fallback', 'final');
-             return;
-        }
-        img.style.display = 'none';
-        return;
-    }
-    img.setAttribute('data-tried-fallback', 'true');
-    if (src.includes('.png')) {
-        img.src = src.replace('.png', '.jpg');
-    } else if (src.includes('.jpg')) {
-        img.src = src.replace('.jpg', '.png');
-    } else if (src.includes('.jpeg')) {
-        img.src = src.replace('.jpeg', '.png');
-    } else {
-        img.style.display = 'none';
-    }
-};
-
-// --- 3D INTERACTIVE SHAPE COMPONENT ---
-const InteractiveShape = () => {
-    const mountRef = useRef(null);
-    const rendererRef = useRef(null);
-    const sceneRef = useRef(null);
-    const cameraRef = useRef(null);
-    const frameIdRef = useRef(null);
-
-    useEffect(() => {
-        if (!mountRef.current) return;
-        while (mountRef.current.firstChild) {
-            mountRef.current.removeChild(mountRef.current.firstChild);
-        }
-
-        const width = mountRef.current.clientWidth || 1;
-        const height = mountRef.current.clientHeight || 1;
-
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x000000); 
-        sceneRef.current = scene;
-
-        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-        camera.position.z = 6;
-        cameraRef.current = camera;
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        mountRef.current.appendChild(renderer.domElement);
-        rendererRef.current = renderer;
-
-        const geometry = new THREE.TorusKnotGeometry(0.85, 0.28, 150, 20); 
-        
-        const material = new THREE.MeshPhysicalMaterial({
-            color: 0xffffff,
-            metalness: 0.1,
-            roughness: 0.2,
-            clearcoat: 1.0,
-            clearcoatRoughness: 0.1,
-            emissive: 0x333333,
-        });
-        
-        const mesh = new THREE.Mesh(geometry, material);
-        scene.add(mesh);
-
-        const wireGeo = new THREE.WireframeGeometry(geometry);
-        const wireMat = new THREE.LineBasicMaterial({ 
-            color: 0xffffff,
-            transparent: true,
-            opacity: 0.1
-        });
-        const wireMesh = new THREE.LineSegments(wireGeo, wireMat);
-        mesh.add(wireMesh);
-
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-        scene.add(ambientLight);
-        
-        const pointLight1 = new THREE.PointLight(0xffffff, 1.2);
-        pointLight1.position.set(10, 10, 10);
-        scene.add(pointLight1);
-
-        const pointLight2 = new THREE.PointLight(0x4444ff, 0.6);
-        pointLight2.position.set(-10, -5, 5);
-        scene.add(pointLight2);
-
-        let mouseX = 0;
-        let mouseY = 0;
-        const handleMouseMove = (event) => {
-            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-        };
-        window.addEventListener('mousemove', handleMouseMove);
-
-        const animate = () => {
-            mesh.rotation.x += 0.008 + (mouseY * 0.03);
-            mesh.rotation.y += 0.008 + (mouseX * 0.03);
-            
-            const time = Date.now() * 0.002;
-            const scale = 1 + Math.sin(time) * 0.03;
-            mesh.scale.set(scale, scale, scale);
-
-            renderer.render(scene, camera);
-            frameIdRef.current = requestAnimationFrame(animate);
-        };
-        animate();
-
-        const resizeObserver = new ResizeObserver((entries) => {
-            for (let entry of entries) {
-                const { width, height } = entry.contentRect;
-                if (width > 0 && height > 0 && cameraRef.current && rendererRef.current) {
-                    cameraRef.current.aspect = width / height;
-                    cameraRef.current.updateProjectionMatrix();
-                    rendererRef.current.setSize(width, height);
-                }
-            }
-        });
-        resizeObserver.observe(mountRef.current);
-
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            resizeObserver.disconnect();
-            if (frameIdRef.current) cancelAnimationFrame(frameIdRef.current);
-            
-            if (mountRef.current && rendererRef.current) {
-                if (mountRef.current.contains(rendererRef.current.domElement)) {
-                    mountRef.current.removeChild(rendererRef.current.domElement);
-                }
-            }
-            
-            geometry.dispose();
-            material.dispose();
-            wireGeo.dispose();
-            wireMat.dispose();
-            renderer.dispose();
-        };
-    }, []);
-
-    return <div ref={mountRef} className="w-full h-full min-h-[300px] cursor-grab active:cursor-grabbing pointer-events-auto" />;
-};
+// --- IMPORT DATA & KOMPONEN (Modular & Bersih) ---
+import { allProjects, handleImageError } from '../constants'; 
+import { InteractiveShape } from '../components/UIComponents'; 
 
 // --- PROJECT CARD COMPONENT ---
 const ProjectCard = ({ project, index, navigateTo, setCursorHovering, setIsEyeMode, revealClass, addToRefs }) => {
@@ -270,7 +13,7 @@ const ProjectCard = ({ project, index, navigateTo, setCursorHovering, setIsEyeMo
         setIsEyeMode(true);
         if (videoRef.current) {
             videoRef.current.play().catch(error => {
-                console.log("Autoplay prevented or interrupted", error);
+                console.log("Autoplay prevented", error);
             });
         }
     };
@@ -286,7 +29,7 @@ const ProjectCard = ({ project, index, navigateTo, setCursorHovering, setIsEyeMo
     return (
         <div className={`w-full py-24 transition-colors duration-500 ${index % 2 === 0 ? 'bg-white' : 'bg-[#FAFAFA]'}`}>
             <div ref={addToRefs} className={`group cursor-pointer ${revealClass} px-6 md:px-12 max-w-[1600px] mx-auto`}>
-                <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center ${project.alignRight ? '' : ''}`}>
+                <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center`}>
                     {/* VISUAL CONTAINER */}
                     <div 
                         className={`relative aspect-[16/9] bg-neutral-200/50 rounded-lg overflow-hidden shadow-sm ${project.alignRight ? 'order-1 md:order-2' : 'order-2 md:order-1'}`} 
@@ -341,8 +84,7 @@ const ProjectCard = ({ project, index, navigateTo, setCursorHovering, setIsEyeMo
 const HomePage = ({ setCursorHovering, setIsEyeMode, setIsVideoHovering, navigateTo }) => {
     const [visibleProjects, setVisibleProjects] = useState(5);
     const revealRefs = useRef([]);
-    const videoContainerRef = useRef(null);
-    const playButtonRef = useRef(null);
+    // Logika animasi play button dihapus dari sini
 
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
@@ -359,28 +101,6 @@ const HomePage = ({ setCursorHovering, setIsEyeMode, setIsVideoHovering, navigat
 
     const addToRefs = (el) => { if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el); };
 
-    useEffect(() => {
-        let frameId;
-        let targetX = 0, targetY = 0;
-        let currentX = 0, currentY = 0;
-        const handleMove = (e) => {
-            if (!videoContainerRef.current) return;
-            const rect = videoContainerRef.current.getBoundingClientRect();
-            targetX = e.clientX - rect.left;
-            targetY = e.clientY - rect.top;
-        };
-        const animate = () => {
-            if(!playButtonRef.current) return;
-            currentX += (targetX - currentX) * 0.25;
-            currentY += (targetY - currentY) * 0.25;
-            playButtonRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) translate(-50%, -50%)`;
-            frameId = requestAnimationFrame(animate);
-        };
-        window.addEventListener('mousemove', handleMove);
-        frameId = requestAnimationFrame(animate);
-        return () => { window.removeEventListener('mousemove', handleMove); cancelAnimationFrame(frameId); };
-    }, []);
-
     const revealClass = "opacity-0 translate-y-16 transition-all duration-[1000ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] will-change-transform";
 
     return (
@@ -396,9 +116,11 @@ const HomePage = ({ setCursorHovering, setIsEyeMode, setIsVideoHovering, navigat
                         Beyond standard design. We empower forward-thinking brands with intelligent UX and radical visual systems ensuring your product stays ahead of the curve.
                     </p>
                 </div>
-                <div ref={(el) => { addToRefs(el); videoContainerRef.current = el; }} className={`w-full h-[40vh] md:h-[50vh] bg-[#111] rounded-2xl overflow-hidden relative group shadow-2xl ${revealClass} delay-[300ms] cursor-none`} onMouseEnter={() => setIsVideoHovering(true)} onMouseLeave={() => setIsVideoHovering(false)}>
+                
+                {/* --- VIDEO AREA FIXED (BERSIH TANPA KURSOR PLAY) --- */}
+                <div ref={addToRefs} className={`w-full h-[40vh] md:h-[50vh] bg-[#111] rounded-2xl overflow-hidden relative group shadow-2xl ${revealClass} delay-[300ms]`} onMouseEnter={() => setIsVideoHovering(true)} onMouseLeave={() => setIsVideoHovering(false)}>
                     <video
-                        src="https://v.ftcdn.net/05/63/68/07/700_F_563680753_c1eGZf8z8A8y8E9z.mp4"
+                        src="/projects/showcase.mp4" 
                         autoPlay
                         muted
                         loop
@@ -406,7 +128,7 @@ const HomePage = ({ setCursorHovering, setIsEyeMode, setIsVideoHovering, navigat
                         className="absolute inset-0 w-full h-full object-cover opacity-60"
                     />
                     <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-20 pointer-events-none z-10"></div>
-                    <div ref={playButtonRef} className="absolute top-0 left-0 w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl z-20 pointer-events-none"><Play className="fill-black text-black ml-1" size={28} /></div>
+                    {/* Elemen Play Button sudah dihapus */}
                 </div>
             </header>
 
@@ -436,6 +158,7 @@ const HomePage = ({ setCursorHovering, setIsEyeMode, setIsVideoHovering, navigat
                 </div>
                 
                 <div className="flex flex-col w-full">
+                    {/* Mengambil data dari Constants */}
                     {allProjects.slice(0, visibleProjects).map((project, index) => (
                         <ProjectCard 
                             key={index} 
@@ -467,6 +190,7 @@ const HomePage = ({ setCursorHovering, setIsEyeMode, setIsVideoHovering, navigat
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                         <div className="flex flex-col gap-12">
                             <h3 ref={addToRefs} className={`text-4xl md:text-5xl font-medium tracking-tight leading-tight ${revealClass}`}>From motion design to AI-powered products—we design and build interfaces for the future.</h3>
+                            {/* Interactive Shape dari UIComponents */}
                             <div ref={addToRefs} className={`w-full aspect-video bg-white/5 rounded-xl border border-white/10 overflow-hidden relative group ${revealClass} delay-100`} onMouseEnter={() => setIsEyeMode(true)} onMouseLeave={() => setIsEyeMode(false)}>
                                 <InteractiveShape />
                             </div>
