@@ -11,7 +11,7 @@ import ContactUs from './pages/ContactUs.jsx';
 import JoinTheNetwork from './pages/JoinPage.jsx';       
 import ProjectDetailPage from './pages/ProjectDetailPage.jsx';
 
-// --- IMPORT HALAMAN BARU: THE COLLECTIVE (PASTIKAN FILE SUDAH DIBUAT) ---
+// --- IMPORT HALAMAN BARU: THE COLLECTIVE ---
 import TalentDirectory from './pages/TalentDirectory.jsx';
 import TalentProfile from './pages/TalentProfile.jsx';
 
@@ -47,6 +47,17 @@ const App = () => {
       setInitialInterest(interestTitle);
       setIsContactOpen(true);
   };
+
+  // --- LOGIC 404 REDIRECT (Penambahan Baru, Tidak Menghapus Apapun) ---
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const redirectPath = params.get('p');
+    if (redirectPath) {
+        const targetPage = redirectPath.replace('/', '');
+        window.history.replaceState(null, null, redirectPath);
+        setActivePage(targetPage);
+    }
+  }, []);
 
   useEffect(() => {
     if (!window.history.state) {
@@ -253,7 +264,6 @@ const App = () => {
             />
         )}
 
-        {/* LOGIC ROUTE BARU */}
         {activePage === 'talent-directory' && (
             <TalentDirectory 
                 setCursorHovering={setCursorHovering}
@@ -261,8 +271,47 @@ const App = () => {
             />
         )}
 
+        {/* LOGIC DATA TALENT (Tetap Menggunakan Struktur Yang Boss Mau) */}
         {activePage === 'talent-syams' && (
             <TalentProfile 
+                data={{
+                    firstName: "SYAMSUL", lastName: "RIZAL", role: "Principal Brand Strategist",
+                    tagline: "Design That Thinks. Strategy That Speaks.",
+                    quote: "Building a brand is not just about making a logo. It is about carving meaning.",
+                    bio: "Every visual work is born from strategic thinking based on research and philosophy.",
+                    stats: [{ value: "2016", label: "Established" }, { value: "200+", label: "Brands" }, { value: "5.0", label: "Rating" }, { value: "100%", label: "Systematic" }],
+                    services: [{ title: "Brand Strategy", desc: "Unraveling essence and positioning." }, { title: "Logo Identity", desc: "Creating solid symbols rooted in strategy." }]
+                }}
+                navigateTo={navigateTo}
+                setCursorHovering={setCursorHovering}
+            />
+        )}
+
+        {activePage === 'talent-nando' && (
+            <TalentProfile 
+                data={{
+                    firstName: "NANDO", lastName: "M", role: "Senior Visual Design Specialist",
+                    tagline: "Visual Systems. AI-Accelerated Workflow.",
+                    quote: "Designing visual systems for high-growth B2B companies with 100% compliance.",
+                    bio: "I specialize in designing and implementing Visual Systems for high-growth B2B companies.",
+                    stats: [{ value: "2023", label: "Current Role" }, { value: "500+", label: "Connections" }, { value: "B2B", label: "Expertise" }, { value: "AI", label: "Integrated" }],
+                    services: [{ title: "Visual Marketing", desc: "High-impact collateral and visual systems." }, { title: "UI/UX Design", desc: "User-centric digital product scalability." }]
+                }}
+                navigateTo={navigateTo}
+                setCursorHovering={setCursorHovering}
+            />
+        )}
+
+        {activePage === 'talent-hadist' && (
+            <TalentProfile 
+                data={{
+                    firstName: "HADIST", lastName: "SYECH", role: "Graphic Designer",
+                    tagline: "Visual Storyteller. Structural Clarity.",
+                    quote: "Branding is about direction, meaning, and connection.",
+                    bio: "Graphic designer focusing on creating engaging visuals and structural clarity for modern brands.",
+                    stats: [{ value: "BINUS", label: "Education" }, { value: "Visual", label: "Specialist" }, { value: "2D", label: "Artistry" }, { value: "100%", label: "Engaging" }],
+                    services: [{ title: "Graphic Design", desc: "Pure visual communication and layout." }, { title: "Visual Identity", desc: "Crafting modern assets for digital era." }]
+                }}
                 navigateTo={navigateTo}
                 setCursorHovering={setCursorHovering}
             />
