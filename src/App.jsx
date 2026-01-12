@@ -11,6 +11,10 @@ import ContactUs from './pages/ContactUs.jsx';
 import JoinTheNetwork from './pages/JoinPage.jsx';       
 import ProjectDetailPage from './pages/ProjectDetailPage.jsx';
 
+// --- IMPORT HALAMAN BARU: THE COLLECTIVE (PASTIKAN FILE SUDAH DIBUAT) ---
+import TalentDirectory from './pages/TalentDirectory.jsx';
+import TalentProfile from './pages/TalentProfile.jsx';
+
 // --- IMPORT KOMPONEN UI ---
 import Footer from './components/Footer.jsx'; 
 
@@ -44,9 +48,7 @@ const App = () => {
       setIsContactOpen(true);
   };
 
-  // --- 1. HANDLE BROWSER HISTORY (BACK BUTTON FIX) ---
   useEffect(() => {
-    // Set initial history state
     if (!window.history.state) {
         window.history.replaceState({ page: 'home' }, '', '/');
     }
@@ -54,10 +56,7 @@ const App = () => {
     const handlePopState = (event) => {
         if (event.state && event.state.page) {
             setActivePage(event.state.page);
-            // Reset scroll on back button
-            if (scrollContainerRef.current) {
-                scrollContainerRef.current.scrollTo(0, 0);
-            }
+            if (scrollContainerRef.current) scrollContainerRef.current.scrollTo(0, 0);
         } else {
             setActivePage('home');
         }
@@ -67,13 +66,9 @@ const App = () => {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // --- CURSOR LOGIC ---
   useEffect(() => {
-    let animationFrameId;
-
     const moveCursor = (e) => {
         if (!cursorRef.current) return;
-        
         const x = e.clientX;
         const y = e.clientY;
         
@@ -116,12 +111,10 @@ const App = () => {
 
     return () => {
         window.removeEventListener('mousemove', moveCursor);
-        cancelAnimationFrame(animationFrameId);
         clearTimeout(timer);
     };
   }, [cursorHovering, isEyeMode, cursorText, isVideoHovering]);
 
-  // --- 2. UPDATED NAVIGATION LOGIC ---
   const navigateTo = (page, param = null) => {
       setIsMenuOpen(false);
 
@@ -131,7 +124,6 @@ const App = () => {
           return;
       }
 
-      // Handle Project Detail
       if (page === 'project') {
           const project = allProjects.find(p => p.id === param);
           if (project) {
@@ -139,7 +131,6 @@ const App = () => {
               setTimeout(() => {
                   setSelectedProject(project);
                   setActivePage('project');
-                  // Push History
                   window.history.pushState({ page: 'project', id: param }, '', `/project/${param}`);
                   setLoaded(true); 
                   if (scrollContainerRef.current) scrollContainerRef.current.scrollTo(0,0);
@@ -148,35 +139,21 @@ const App = () => {
           return;
       }
 
-      // Handle Scroll to Section on same page
-      if (activePage === page && typeof param === 'string' && !param.startsWith('0')) { 
-           const element = document.getElementById(param);
-           if (element) element.scrollIntoView({ behavior: 'smooth' });
-           return;
-      }
-
-      // Handle Page Change
-      if (activePage !== page) {
-          setLoaded(false);
+      setLoaded(false);
+      setTimeout(() => {
+          setActivePage(page);
+          const path = page === 'home' ? '/' : `/${page}`;
+          window.history.pushState({ page: page }, '', path);
+          
+          setLoaded(true);
           setTimeout(() => {
-              setActivePage(page);
-              // Push History
-              const path = page === 'home' ? '/' : `/${page}`;
-              window.history.pushState({ page: page }, '', path);
-              
-              setLoaded(true);
-              setTimeout(() => {
-                  if (scrollContainerRef.current) scrollContainerRef.current.scrollTo(0,0);
-                  if (param && typeof param === 'string') {
-                      const element = document.getElementById(param);
-                      if (element) element.scrollIntoView({ behavior: 'smooth' });
-                  }
-              }, 50);
-          }, 700);
-      } else {
-          // Same page, just reset scroll
-          if (scrollContainerRef.current) scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+              if (scrollContainerRef.current) scrollContainerRef.current.scrollTo(0,0);
+              if (param && typeof param === 'string') {
+                  const element = document.getElementById(param);
+                  if (element) element.scrollIntoView({ behavior: 'smooth' });
+              }
+          }, 50);
+      }, 700);
   };
 
   const handleLogoClick = () => {
@@ -217,22 +194,11 @@ const App = () => {
           <img src="/brand/logo.png" alt="KREAVITY WORKS" className="h-10 md:h-12 w-auto object-contain"/>
         </div>
         <div className="hidden md:flex items-center gap-8 text-sm tracking-tight font-medium text-black/70">
-          <button onClick={() => navigateTo('home', 'why-choose-us')} className="hover:text-black relative group overflow-hidden cursor-pointer" onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)}>
-              <span className="relative z-10">Why Us</span><span className="absolute bottom-0 left-0 w-full h-[1px] bg-black transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
-          </button>
-          <button onClick={() => navigateTo('workflow')} className={`hover:text-black relative group overflow-hidden cursor-pointer ${activePage === 'workflow' ? 'text-black font-bold' : ''}`} onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)}>
-              <span className="relative z-10">Workflow</span><span className={`absolute bottom-0 left-0 w-full h-[1px] bg-black transform transition-transform duration-300 ease-out ${activePage === 'workflow' ? 'translate-x-0' : '-translate-x-full group-hover:translate-x-0'}`}></span>
-          </button>
-          <button onClick={() => navigateTo('home', 'projects')} className="hover:text-black relative group overflow-hidden cursor-pointer" onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)}>
-              <span className="relative z-10">Projects</span><span className="absolute bottom-0 left-0 w-full h-[1px] bg-black transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
-          </button>
-          <button onClick={() => navigateTo('company')} className={`hover:text-black relative group overflow-hidden cursor-pointer ${activePage === 'company' ? 'text-black font-bold' : ''}`} onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)}>
-              <span className="relative z-10">Company</span><span className={`absolute bottom-0 left-0 w-full h-[1px] bg-black transform transition-transform duration-300 ease-out ${activePage === 'company' ? 'translate-x-0' : '-translate-x-full group-hover:translate-x-0'}`}></span>
-          </button>
-          <button onClick={() => navigateTo('home', 'contact')} className={`relative overflow-hidden group border border-black/10 transition-all duration-300 cursor-pointer rounded-full px-6 py-2`} onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)}>
-             <span className="absolute inset-0 bg-black translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"></span>
-             <span className="relative z-10 group-hover:text-white transition-colors duration-300 flex items-center justify-center gap-2">Contact Us</span>
-          </button>
+          <button onClick={() => navigateTo('home', 'why-choose-us')} className="hover:text-black cursor-pointer" onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)}>Why Us</button>
+          <button onClick={() => navigateTo('workflow')} className="hover:text-black cursor-pointer" onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)}>Workflow</button>
+          <button onClick={() => navigateTo('home', 'projects')} className="hover:text-black cursor-pointer" onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)}>Projects</button>
+          <button onClick={() => navigateTo('company')} className="hover:text-black cursor-pointer" onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)}>Company</button>
+          <button onClick={() => navigateTo('home', 'contact')} className="border border-black/10 rounded-full px-6 py-2 hover:bg-black hover:text-white transition-all cursor-pointer" onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)}>Contact Us</button>
         </div>
         <button className="md:hidden text-black" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -240,22 +206,18 @@ const App = () => {
     </nav>
 
     {isMenuOpen && (
-        <div className="fixed inset-0 bg-white z-40 flex flex-col justify-center items-center gap-8 text-2xl font-light tracking-tighter text-black animate-in fade-in zoom-in duration-300">
-          <button onClick={() => navigateTo('home', 'why-choose-us')}>Why Us</button>
+        <div className="fixed inset-0 bg-white z-[60] flex flex-col justify-center items-center gap-8 text-2xl font-light tracking-tighter text-black animate-in fade-in zoom-in duration-300">
+          <button onClick={() => navigateTo('home')}>Home</button>
           <button onClick={() => navigateTo('workflow')}>Workflow</button>
-          <button onClick={() => navigateTo('home', 'projects')}>Projects</button>
           <button onClick={() => navigateTo('company')}>Company</button>
-          <button onClick={() => { setIsMenuOpen(false); setIsContactOpen(true); }}>Contact Us</button>
-          <button onClick={() => navigateTo('partner')}>Partnership</button>
-          <button onClick={() => navigateTo('privacy-policy')}>Privacy Policy</button>
+          <button onClick={() => navigateTo('talent-directory')}>The Collective</button>
+          <button onClick={() => setIsMenuOpen(false)}>Close</button>
         </div>
     )}
 
     <div 
         ref={scrollContainerRef}
-        className={`h-screen w-full overflow-y-auto overflow-x-hidden scroll-smooth font-sans selection:bg-black selection:text-white 
-        ${(activePage === 'home' || activePage === 'company') ? 'snap-y snap-mandatory' : ''} 
-        ${isMenuOpen ? 'overflow-hidden' : ''}`}
+        className={`h-screen w-full overflow-y-auto overflow-x-hidden scroll-smooth font-sans selection:bg-black selection:text-white`}
     >
         {activePage === 'home' && (
             <HomePage 
@@ -291,6 +253,21 @@ const App = () => {
             />
         )}
 
+        {/* LOGIC ROUTE BARU */}
+        {activePage === 'talent-directory' && (
+            <TalentDirectory 
+                setCursorHovering={setCursorHovering}
+                navigateTo={navigateTo}
+            />
+        )}
+
+        {activePage === 'talent-syams' && (
+            <TalentProfile 
+                navigateTo={navigateTo}
+                setCursorHovering={setCursorHovering}
+            />
+        )}
+
         {activePage === 'project' && selectedProject && (
             <ProjectDetailPage
                 project={selectedProject}
@@ -303,25 +280,8 @@ const App = () => {
             />
         )}
 
-        {/* Footer dipanggil dari file terpisah */}
         <Footer setCursorHovering={setCursorHovering} navigateTo={navigateTo} openContact={() => setIsContactOpen(true)} />
     </div>
-    
-    <style>{`
-        @keyframes logoReset {
-            0% { transform: scale(1); filter: blur(0px); opacity: 1; }
-            40% { transform: scale(0.92); filter: blur(1.5px); opacity: 0.7; }
-            100% { transform: scale(1); filter: blur(0px); opacity: 1; }
-        }
-        .animate-logo-reset {
-            animation: logoReset 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-        @keyframes blob { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0px, 0px) scale(1); } }
-        .animate-blob { animation: blob 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
-        .animation-delay-2000 { animation-delay: 2s; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-    `}</style>
     </>
   );
 };

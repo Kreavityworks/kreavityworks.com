@@ -9,7 +9,6 @@ const Footer = ({ setCursorHovering, navigateTo, openContact }) => {
     const revealRefs = useRef([]);
     const addToRefs = (el) => { if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el); };
 
-    // --- Perbaikan: useEffect sekarang ada DI DALAM komponen ---
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -88,9 +87,14 @@ const Footer = ({ setCursorHovering, navigateTo, openContact }) => {
                 </div>
                 <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-black/10 text-xs text-black/40 uppercase tracking-widest font-medium">
                     <div className="flex gap-8 mb-4 md:mb-0">
-                        <button onClick={() => navigateTo('privacy-policy')} className="hover:text-black">Privacy Policy</button>
-                        <button onClick={() => navigateTo('partner')} className="hover:text-black relative group flex items-center gap-1">
+                        <button onClick={() => navigateTo('privacy-policy')} className="hover:text-black transition-colors">Privacy Policy</button>
+                        <button onClick={() => navigateTo('partner')} className="hover:text-black relative group flex items-center gap-1 transition-colors">
                             Become Partner Agent
+                            <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-black group-hover:w-full transition-all duration-300"></span>
+                        </button>
+                        {/* NAMA TOMBOL BARU: THE COLLECTIVE */}
+                        <button onClick={() => navigateTo('talent-directory')} className="hover:text-black relative group flex items-center gap-1 transition-colors">
+                            The Collective
                             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-black group-hover:w-full transition-all duration-300"></span>
                         </button>
                     </div>

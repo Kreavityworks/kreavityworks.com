@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { ArrowRight, Briefcase, Network, Building2 } from 'lucide-react';
 
-const BecomePartnerAgent = ({ setCursorHovering, openPartnerForm }) => {
+const BecomePartnerAgent = ({ setCursorHovering }) => {
     const revealRefs = useRef([]);
     const addToRefs = (el) => { if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el); };
 
@@ -18,6 +18,16 @@ const BecomePartnerAgent = ({ setCursorHovering, openPartnerForm }) => {
         return () => observer.disconnect();
     }, []);
 
+    // MAINTENANCE ALERT LOGIC
+    const handleJoinNetwork = () => {
+        alert(
+            "PARTNERSHIP NOTICE: \n\n" +
+            "Our Partner Onboarding system is currently undergoing scheduled maintenance to improve our global network infrastructure. \n\n" +
+            "Please send your partnership proposal directly to our management at: projects@kreavityworks.com \n\n" +
+            "We look forward to collaborating with you."
+        );
+    };
+
     const revealClass = "opacity-0 translate-y-12 transition-all duration-[1000ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform";
 
     return (
@@ -33,7 +43,7 @@ const BecomePartnerAgent = ({ setCursorHovering, openPartnerForm }) => {
                     </p>
                     <div ref={addToRefs} className={`${revealClass} delay-300`}>
                         <button 
-                            onClick={openPartnerForm} 
+                            onClick={handleJoinNetwork} 
                             className="bg-black text-white px-10 py-5 rounded-full text-lg font-medium hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3 group shadow-xl" 
                             onMouseEnter={() => setCursorHovering(true)} 
                             onMouseLeave={() => setCursorHovering(false)}

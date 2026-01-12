@@ -23,10 +23,26 @@ const CompanyPage = ({ setCursorHovering, setCursorText }) => {
     }, []);
 
     const pillars = [
-        { title: "AI-Powered Velocity", desc: "We slash production time via AI integration in UX/UI workflows, guaranteeing 24-48h turnaround for world-class design iterations without compromising quality.", icon: <Zap size={32} /> },
-        { title: "The 25 Global Principles", desc: "Zero error policy. Every pixel and code line is audited via our 25 Global Implementation Principles to ensure perfect product integrity.", icon: <ShieldCheck size={32} /> },
-        { title: "Sentient Interaction", desc: "Building digital experiences 'aware' of user presence. We employ Sentient UI logic and Magnetic Physics for more human-centric interactions.", icon: <Cpu size={32} /> },
-        { title: "Predictive Scalability", desc: "Our web architecture is built to Fortune 500 standards. Modular structure ensures your digital assets are ready for global scale and future tech integration.", icon: <Layers size={32} /> }
+        { 
+            title: "AI-Powered Creativity", 
+            desc: "We slash production time via AI integration in creative workflows, guaranteeing rapid turnaround for world-class assets and strategic iterations without compromising quality.", 
+            icon: <Zap size={32} /> 
+        },
+        { 
+            title: "The 25 Global Principles", 
+            desc: "Zero error policy. Every creative project and code line is audited via our 25 Global Implementation Principles to ensure market leadership and product integrity.", 
+            icon: <ShieldCheck size={32} /> 
+        },
+        { 
+            title: "Sentient Brand Strategy", 
+            desc: "Building brand experiences 'aware' of market shifts. We employ data-driven creative logic and Sentient UI for high-impact human interaction.", 
+            icon: <Cpu size={32} /> 
+        },
+        { 
+            title: "Scalable Talent Network", 
+            desc: "Our infrastructure is built for global scale. Modular talent integration ensures elite creative results and future-proof tech stack for Fortune 500 standards.", 
+            icon: <Layers size={32} /> 
+        }
     ];
 
     const revealClass = "opacity-0 translate-y-16 transition-all duration-[1000ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] will-change-transform";
@@ -43,17 +59,17 @@ const CompanyPage = ({ setCursorHovering, setCursorText }) => {
                 >
                     <span ref={addToRefs} className={`block ${revealClass}`}>Architecting</span>
                     <span ref={addToRefs} className={`block ${revealClass} delay-100`}>the Future of</span>
-                    <span ref={addToRefs} className={`block ${revealClass} delay-200 text-black/40`}>High-Scale Brands.</span>
+                    <span ref={addToRefs} className={`block ${revealClass} delay-200 text-black/40`}>Creative Industries.</span>
                 </h1>
                 
                 <div ref={addToRefs} className={`max-w-3xl pl-0 md:pl-2 border-l-2 border-black/10 ${revealClass} delay-300`}>
-                    <p className="text-xl md:text-2xl text-black/80 leading-relaxed pl-6">Since our inception, we haven't just sought solutions; we've built <strong>Visual Growth Systems</strong>. Combining design precision with AI intelligence to ensure every digital asset operates at the highest level.</p>
+                    <p className="text-xl md:text-2xl text-black/80 leading-relaxed pl-6">Since our inception, we haven't just sought solutions; we've built <strong>High-Impact Creative Systems</strong>. Combining strategic execution with AI intelligence to ensure every brand asset operates at the highest global level.</p>
                 </div>
             </article>
             
             <section className="snap-start mb-20">
                 <div className="flex justify-between items-end mb-16 border-b border-black/10 pb-8">
-                    <h2 ref={addToRefs} className={`text-4xl font-medium tracking-tighter ${revealClass}`}>The Optimization Hub</h2>
+                    <h2 ref={addToRefs} className={`text-4xl font-medium tracking-tighter ${revealClass}`}>The Creative Hub</h2>
                     <span ref={addToRefs} className={`hidden md:block text-black/40 ${revealClass}`}>Our Standard of Excellence</span>
                 </div>
                 <div className="grid grid-cols-1 gap-0">
