@@ -85,20 +85,25 @@ const Footer = ({ setCursorHovering, navigateTo, openContact }) => {
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-black/10 text-xs text-black/40 uppercase tracking-widest font-medium">
-                    <div className="flex gap-8 mb-4 md:mb-0">
+
+                {/* --- BAGIAN PERBAIKAN: SEJAJAR & CENTER COPYRIGHT --- */}
+                <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-black/10 text-xs text-black/40 uppercase tracking-widest font-medium gap-10 md:gap-0">
+                    <div className="flex flex-row justify-center items-center gap-6 md:gap-8 flex-wrap">
                         <button onClick={() => navigateTo('privacy-policy')} className="hover:text-black transition-colors">Privacy Policy</button>
-                        <button onClick={() => navigateTo('partner')} className="hover:text-black relative group flex items-center gap-1 transition-colors">
+                        <button onClick={() => navigateTo('partner')} className="hover:text-black relative group transition-colors">
                             Become Partner Agent
                             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-black group-hover:w-full transition-all duration-300"></span>
                         </button>
-                        {/* NAMA TOMBOL BARU: THE COLLECTIVE */}
-                        <button onClick={() => navigateTo('talent-directory')} className="hover:text-black relative group flex items-center gap-1 transition-colors">
+                        <button onClick={() => navigateTo('talent-directory')} className="hover:text-black relative group transition-colors">
                             The Collective
                             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-black group-hover:w-full transition-all duration-300"></span>
                         </button>
                     </div>
-                    <p>&copy; 2026 KreavityWorks. All Rights Reserved.</p>
+                    
+                    {/* Copyright diposisikan di tengah pada mobile */}
+                    <div className="w-full md:w-auto text-center">
+                        <p className="opacity-60">&copy; 2026 KreavityWorks. All Rights Reserved.</p>
+                    </div>
                 </div>
             </div>
         </footer>

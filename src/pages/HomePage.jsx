@@ -1,76 +1,23 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { X, Check, ArrowRight, Loader2, ChevronDown, Search, Paperclip, Trash2, Plus, Globe, ArrowUpRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { allProjects, handleImageError } from '../constants';
+import { InteractiveShape, ThreeBackground } from '../components/UIComponents';
 
-// --- IMPORT DATA & KOMPONEN ---
-import { allProjects, handleImageError } from '../constants'; 
-import { InteractiveShape, ThreeBackground } from '../components/UIComponents'; 
-
-// --- PROJECT CARD COMPONENT ---
-const ProjectCard = ({ project, index, navigateTo, setCursorHovering, setIsEyeMode, revealClass, addToRefs }) => {
-    const videoRef = useRef(null);
-
-    const handleMouseEnter = () => {
-        setIsEyeMode(true);
-        if (videoRef.current) {
-            videoRef.current.play().catch(error => {
-                console.log("Autoplay prevented", error);
-            });
-        }
-    };
-
-    const handleMouseLeave = () => {
-        setIsEyeMode(false);
-        if (videoRef.current) {
-            videoRef.current.pause();
-            videoRef.current.currentTime = 0;
-        }
-    };
-
+const ProjectCard = ({ project, navigateTo, revealClass, addToRefs }) => {
     return (
-        <div className="w-full py-24 transition-colors duration-500 bg-white border-b border-black/5 relative z-20">
+        /* Tarik margin atas-bawah agar komponen benar-benar berdempetan di HP */
+        <div className="w-full py-4 md:py-24 transition-colors duration-500 bg-white border-b border-black/5 relative z-20">
             <div ref={addToRefs} className={`group cursor-pointer ${revealClass} px-6 md:px-12 max-w-[1600px] mx-auto relative z-10`}>
-                <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center`}>
-                    <div 
-                        className={`relative aspect-[16/9] bg-neutral-200/50 rounded-lg overflow-hidden shadow-sm ${project.alignRight ? 'order-1 md:order-2' : 'order-2 md:order-1'}`} 
-                        onMouseEnter={handleMouseEnter} 
-                        onMouseLeave={handleMouseLeave} 
-                        onClick={() => navigateTo('project', project.id)}
-                    >
-                        {project.video && (
-                            <video
-                                ref={videoRef}
-                                src={project.video}
-                                muted
-                                loop
-                                playsInline
-                                className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out z-10"
-                            />
-                        )}
-
-                        <div className={`absolute inset-0 bg-neutral-300/30 flex items-center justify-center z-20 transition-transform duration-[1200ms] ease-out group-hover:scale-105`}>
-                            {project.image ? (
-                                <img 
-                                    src={project.image} 
-                                    alt={project.title} 
-                                    className="w-full h-full object-cover" 
-                                    onError={handleImageError}
-                                />
-                            ) : (
-                                <div className="text-black/10 text-8xl font-bold tracking-tighter select-none">{project.id}</div>
-                            )}
-                        </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-16 items-center">
+                    <div className="relative aspect-[16/9] bg-neutral-200/50 rounded-lg overflow-hidden" onClick={() => navigateTo('project', project.id)}>
+                        <img src={project.image} alt={project.title} className="w-full h-full object-cover" onError={handleImageError} />
                     </div>
-
-                    <div className={`flex flex-col justify-center h-full ${project.alignRight ? 'order-2 md:order-1 md:text-right' : 'order-1 md:order-2 text-left'}`}>
-                        <h4 className="text-sm text-black/40 uppercase tracking-widest mb-4 font-medium">{project.category}</h4>
-                        <h3 onClick={() => navigateTo('project', project.id)} className="text-4xl md:text-6xl font-medium tracking-tighter mb-6 group-hover:text-black/70 transition-colors cursor-pointer">{project.title}</h3>
-                        <p className={`text-black/60 text-lg leading-relaxed max-w-md mb-8 ${project.alignRight ? 'ml-auto' : ''}`}>{project.desc}</p>
-                        <div className={`flex mt-4 ${project.alignRight ? 'justify-end' : 'justify-start'}`}>
-                            <button className={`relative overflow-hidden group border border-black/20 transition-all duration-300 cursor-pointer rounded-full px-8 py-3`} onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)} onClick={() => navigateTo('project', project.id)}>
-                                <span className="absolute inset-0 bg-black translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"></span>
-                                <span className="relative z-10 group-hover:text-white transition-colors duration-300 flex items-center justify-center gap-2">View Project <ArrowRight size={16} /></span>
-                            </button>
-                        </div>
+                    <div className="flex flex-col justify-center">
+                        <h4 className="text-[10px] text-black/40 uppercase tracking-widest mb-1 font-medium">{project.category}</h4>
+                        <h3 className="text-xl font-medium tracking-tighter mb-2">{project.title}</h3>
+                        <button className="w-fit border border-black/20 rounded-full px-4 py-1.5 text-[10px] uppercase" onClick={() => navigateTo('project', project.id)}>
+                            View Project
+                        </button>
                     </div>
                 </div>
             </div>
@@ -78,148 +25,68 @@ const ProjectCard = ({ project, index, navigateTo, setCursorHovering, setIsEyeMo
     );
 };
 
-// --- MAIN HOMEPAGE COMPONENT ---
 const HomePage = ({ setCursorHovering, setIsEyeMode, setIsVideoHovering, navigateTo }) => {
     const [visibleProjects, setVisibleProjects] = useState(5);
     const revealRefs = useRef([]);
-    const heroTextRef = useRef(null);
-
-    useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('opacity-100', 'translate-y-0');
-                    entry.target.classList.remove('opacity-0', 'translate-y-16');
-                }
-            });
-        }, { threshold: 0.1 });
-        setTimeout(() => revealRefs.current.forEach(el => el && observer.observe(el)), 100);
-        return () => observer.disconnect();
-    }, [visibleProjects]); 
-
-    useEffect(() => {
-        const handleScroll = () => {
-            if (heroTextRef.current) {
-                const scrolled = window.scrollY;
-                heroTextRef.current.style.transform = `translateY(${scrolled * 0.2}px)`;
-                heroTextRef.current.style.opacity = `${1 - scrolled / 700}`;
-            }
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
     const addToRefs = (el) => { if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el); };
-
-    const revealClass = "opacity-0 translate-y-16 transition-all duration-[1000ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] will-change-transform";
+    const revealClass = "opacity-0 translate-y-4 transition-all duration-500 ease-out";
 
     return (
         <div className="w-full">
-            {/* HERO */}
-            <header className="snap-start min-h-screen relative pt-32 pb-20 px-6 md:px-12 flex flex-col justify-center max-w-[1600px] mx-auto bg-white text-black overflow-hidden">
-                <ThreeBackground />
-                <div ref={heroTextRef} className="max-w-5xl z-10 mb-8 relative select-none will-change-transform">
-                    {/* REBRANDED TEXT */}
-                    <h5 ref={addToRefs} className={`text-sm md:text-base text-black/50 mb-6 uppercase tracking-[0.2em] ${revealClass}`}>A Next-Gen Creative Agency</h5>
-                    <h1 ref={addToRefs} className={`text-5xl md:text-7xl lg:text-8xl font-medium tracking-tighter leading-[1.05] mb-8 mix-blend-multiply ${revealClass} delay-[100ms]`}>
+            {/* HERO: Menghilangkan min-h-screen agar langsung nyambung ke bawah */}
+            <header className="h-fit md:h-screen relative pt-24 md:pt-32 pb-6 px-6 md:px-12 flex flex-col justify-center max-w-[1600px] mx-auto bg-white overflow-hidden">
+                <div className="absolute inset-0 z-0 scale-[1.2] opacity-20 grayscale pointer-events-none">
+                    <ThreeBackground />
+                </div>
+                <div className="z-10 relative">
+                    <h5 className="text-[10px] text-black/50 mb-2 uppercase tracking-widest">A Next-Gen Creative Agency</h5>
+                    <h1 className="text-3xl font-medium tracking-tighter leading-tight mb-4">
                         Global Digital <br /><span className="text-black/40">Architecture Agency.</span>
                     </h1>
-                    <p ref={addToRefs} className={`text-lg md:text-xl text-black/70 max-w-2xl leading-relaxed ${revealClass} delay-[200ms]`}>
-                        Beyond standard execution. We empower forward-thinking brands with intelligent strategy and radical visual systems ensuring your brand stays ahead of the curve.
-                    </p>
                 </div>
             </header>
 
-            {/* STATS */}
-            <section className="snap-start min-h-screen px-6 md:px-12 flex items-center bg-[#050505] text-white py-20 relative z-30">
-                <div className="max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 w-full items-center">
-                    <div className="space-y-8">
-                        <h2 ref={addToRefs} className={`text-3xl md:text-5xl font-light tracking-tight leading-snug ${revealClass}`}>
-                            We build ecosystems, we engineer high-scale digital assets specific for aggressive scale-ups through creative AI integration.
+            {/* STATS: Menghilangkan min-h-screen agar rapat ke Hero (Gambar 3 fix) */}
+            <section className="px-6 md:px-12 bg-[#050505] text-white py-12 md:py-24 relative z-30">
+                <div className="max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 w-full items-center">
+                    <div className="space-y-4 order-2 md:order-1">
+                        <h2 className="text-xl font-light tracking-tight leading-snug">
+                            We build ecosystems, engineer high-scale digital assets specific for aggressive scale-ups.
                         </h2>
-                        <div ref={addToRefs} className={`flex flex-col justify-end ${revealClass} delay-[200ms]`}>
-                            <p className="text-white/60 mb-8 leading-relaxed text-lg">Guaranteed for long-term growth, ensuring every creative asset performs at peak efficiency without compromise.</p>
-                            <button onClick={() => navigateTo('company')} className={`relative overflow-hidden group border border-white/20 transition-all duration-300 cursor-pointer rounded-full px-8 py-4 w-fit hover:border-white`} onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)}>
-                                <span className="absolute inset-0 bg-white translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"></span>
-                                <span className="relative z-10 group-hover:text-black transition-colors duration-300 flex items-center gap-2">Our Vision <ArrowRight size={18} /></span>
-                            </button>
-                        </div>
                     </div>
-                    <div ref={addToRefs} className={`w-full aspect-video bg-[#111] rounded-2xl overflow-hidden relative group shadow-2xl ${revealClass} delay-[300ms]`} onMouseEnter={() => setIsVideoHovering(true)} onMouseLeave={() => setIsVideoHovering(false)}>
-                        <video
-                            src="/projects/showcase.mp4" 
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            className="absolute inset-0 w-full h-full object-cover opacity-60"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-20 pointer-events-none z-10"></div>
+                    <div className="w-full aspect-[4/3] bg-[#111] rounded-xl overflow-hidden order-1 md:order-2">
+                        <video src="/projects/showcase.mp4" autoPlay muted loop playsInline className="w-full h-full object-cover opacity-60" />
                     </div>
                 </div>
             </section>
 
-            {/* FEATURED PROJECTS */}
-            <section id="projects" className="snap-start min-h-screen flex flex-col justify-center bg-white text-black py-32 relative z-30">
-                <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 relative z-20">
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-24 border-b border-black/10 pb-8 bg-white">
-                        <h2 ref={addToRefs} className={`text-5xl font-medium tracking-tighter ${revealClass}`}>Selected Works</h2>
-                        <span ref={addToRefs} className={`hidden md:block text-black/40 ${revealClass}`}>Case Studies 2024-2025</span>
-                    </div>
+            {/* PROJECTS: Header rapat ke atas */}
+            <section id="projects" className="bg-white text-black py-8 md:py-32 relative z-30">
+                <div className="max-w-[1600px] mx-auto w-full px-6 md:px-12 border-b border-black/10 pb-4">
+                    <h2 className="text-2xl font-medium tracking-tighter">Selected Works</h2>
                 </div>
-                
-                <div className="flex flex-col w-full relative z-20">
-                    {allProjects.slice(0, visibleProjects).map((project, index) => (
-                        <ProjectCard 
-                            key={index} 
-                            project={project} 
-                            index={index} 
-                            navigateTo={navigateTo} 
-                            setCursorHovering={setCursorHovering} 
-                            setIsEyeMode={setIsEyeMode} 
-                            revealClass={revealClass} 
-                            addToRefs={addToRefs} 
-                        />
+                <div className="flex flex-col w-full">
+                    {allProjects.slice(0, visibleProjects).map((p, i) => (
+                        <ProjectCard key={i} project={p} navigateTo={navigateTo} revealClass={revealClass} addToRefs={addToRefs} />
                     ))}
                 </div>
-
-                {visibleProjects < allProjects.length && (
-                    <div ref={addToRefs} className={`mt-0 text-center ${revealClass} px-0 relative z-20`}>
-                        <div className="bg-white py-24 border-b border-black/10">
-                            <button onClick={() => setVisibleProjects(10)} className="relative overflow-hidden group border border-black/10 transition-all duration-300 cursor-pointer rounded-full px-12 py-6 text-lg bg-white shadow-sm" onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)}>
-                                <span className="absolute inset-0 bg-black translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"></span>
-                                <span className="relative z-10 group-hover:text-white transition-colors duration-300 flex items-center gap-2">Discover more <ArrowUpRight size={20} /></span>
-                            </button>
-                        </div>
-                    </div>
-                )}
+                {/* FIX Gambar 7 & 8: Menghapus py-24 besar yang bikin scroll jauh */}
+                <div className="py-12 text-center border-b border-black/10">
+                    <button onClick={() => setVisibleProjects(10)} className="border border-black/10 rounded-full px-8 py-3 text-sm flex items-center gap-2 mx-auto">
+                        Discover more <ArrowUpRight size={16} />
+                    </button>
+                </div>
             </section>
 
-            {/* WHY CHOOSE US */}
-            <section id="why-choose-us" className="snap-start min-h-screen px-6 md:px-12 flex items-center bg-[#050505] text-white py-20 relative z-30">
-                <div className="max-w-[1600px] mx-auto w-full">
-                    <h2 ref={addToRefs} className={`text-sm uppercase tracking-widest text-white/40 mb-16 ${revealClass}`}>Beyond Creative Standards</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                        <div className="flex flex-col gap-12">
-                            <h3 ref={addToRefs} className={`text-4xl md:text-5xl font-medium tracking-tight leading-tight ${revealClass}`}>From brand strategy to AI-driven output—we build the future of creative industries.</h3>
-                            <div ref={addToRefs} className={`w-full aspect-video bg-white/5 rounded-xl border border-white/10 overflow-hidden relative group ${revealClass} delay-100`} onMouseEnter={() => setIsEyeMode(true)} onMouseLeave={() => setIsEyeMode(false)}>
+            {/* WHY CHOOSE US: Container 3D dikecilkan agar geometri tidak terpotong (Gambar 6 fix) */}
+            <section id="why-choose-us" className="px-6 md:px-12 bg-[#050505] text-white py-12 md:py-20 relative z-30">
+                <div className="max-w-[1600px] mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="flex flex-col gap-6">
+                        <h3 className="text-2xl font-medium tracking-tight">From brand strategy to AI-driven output.</h3>
+                        <div className="w-full aspect-square bg-white/5 rounded-xl border border-white/10 flex items-center justify-center p-12">
+                            <div className="w-full h-full scale-[0.6] flex items-center justify-center">
                                 <InteractiveShape />
                             </div>
-                        </div>
-                        <div className="space-y-0">
-                            {[
-                                { t: "AI-Powered Creativity", d: "We slash production time via AI integration in creative workflows, guaranteeing rapid turnaround for world-class assets.", i: "01" },
-                                { t: "The 25 Global Principles", d: "Zero error policy. Every project is audited via our 25 Global Implementation Principles to ensure market leadership.", i: "02" },
-                                { t: "Sentient Brand Strategy", d: "Building brand experiences 'aware' of market shifts. We employ data-driven logic for high-impact human interaction.", i: "03" },
-                                { t: "Scalable Talent Network", d: "Our infrastructure is built for global scale. Modular talent integration ensures elite results for Fortune 500 standards.", i: "04" }
-                            ].map((s, i) => (
-                                <div key={i} ref={addToRefs} className={`group border-t border-white/10 py-8 hover:bg-white/5 transition-colors duration-300 px-4 -mx-4 cursor-pointer ${revealClass}`}>
-                                    <div className="flex items-start gap-6">
-                                        <span className="text-xs font-mono text-white/30 pt-1">{s.i}</span>
-                                        <div><h4 className="text-xl font-medium mb-2 group-hover:text-white transition-colors">{s.t}</h4><p className="text-white/60 text-sm">{s.d}</p></div>
-                                    </div>
-                                </div>
-                            ))}
                         </div>
                     </div>
                 </div>

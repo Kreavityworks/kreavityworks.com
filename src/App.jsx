@@ -48,7 +48,7 @@ const App = () => {
       setIsContactOpen(true);
   };
 
-  // --- LOGIC 404 REDIRECT (Penambahan Baru, Tidak Menghapus Apapun) ---
+  // --- LOGIC 404 REDIRECT ---
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const redirectPath = params.get('p');
@@ -211,18 +211,25 @@ const App = () => {
           <button onClick={() => navigateTo('company')} className="hover:text-black cursor-pointer" onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)}>Company</button>
           <button onClick={() => navigateTo('home', 'contact')} className="border border-black/10 rounded-full px-6 py-2 hover:bg-black hover:text-white transition-all cursor-pointer" onMouseEnter={() => setCursorHovering(true)} onMouseLeave={() => setCursorHovering(false)}>Contact Us</button>
         </div>
-        <button className="md:hidden text-black" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+        {/* Mobile Toggle dengan transisi halus */}
+        <button className="md:hidden text-black transition-transform duration-300 active:scale-90" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
     </nav>
 
+    {/* Mobile Menu Fix: Glassmorphism & Animasi Layered */}
     {isMenuOpen && (
-        <div className="fixed inset-0 bg-white z-[60] flex flex-col justify-center items-center gap-8 text-2xl font-light tracking-tighter text-black animate-in fade-in zoom-in duration-300">
-          <button onClick={() => navigateTo('home')}>Home</button>
-          <button onClick={() => navigateTo('workflow')}>Workflow</button>
-          <button onClick={() => navigateTo('company')}>Company</button>
-          <button onClick={() => navigateTo('talent-directory')}>The Collective</button>
-          <button onClick={() => setIsMenuOpen(false)}>Close</button>
+        <div className="fixed inset-0 bg-white/90 backdrop-blur-2xl z-[60] flex flex-col justify-center items-center gap-10 animate-in fade-in duration-500 overflow-hidden md:hidden">
+          <button onClick={() => navigateTo('home')} className="text-4xl font-medium tracking-tighter text-black/40 hover:text-black transition-colors animate-in slide-in-from-bottom-4 duration-500 delay-75">Home</button>
+          <button onClick={() => navigateTo('workflow')} className="text-4xl font-medium tracking-tighter text-black/40 hover:text-black transition-colors animate-in slide-in-from-bottom-4 duration-500 delay-100">Workflow</button>
+          <button onClick={() => navigateTo('company')} className="text-4xl font-medium tracking-tighter text-black/40 hover:text-black transition-colors animate-in slide-in-from-bottom-4 duration-500 delay-150">Company</button>
+          <button onClick={() => navigateTo('talent-directory')} className="text-4xl font-medium tracking-tighter text-black/40 hover:text-black transition-colors animate-in slide-in-from-bottom-4 duration-500 delay-200">The Collective</button>
+          <button 
+            onClick={() => setIsMenuOpen(false)} 
+            className="mt-10 w-16 h-16 rounded-full border border-black/5 flex items-center justify-center text-black/20 hover:text-black hover:border-black/20 transition-all duration-300 active:scale-95 animate-in slide-in-from-bottom-4 duration-500 delay-300"
+          >
+            <X size={28} />
+          </button>
         </div>
     )}
 
@@ -271,7 +278,7 @@ const App = () => {
             />
         )}
 
-        {/* LOGIC DATA TALENT (Tetap Menggunakan Struktur Yang Boss Mau) */}
+        {/* LOGIC DATA TALENT */}
         {activePage === 'talent-syams' && (
             <TalentProfile 
                 data={{
